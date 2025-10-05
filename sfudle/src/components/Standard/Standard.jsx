@@ -1,116 +1,104 @@
-import fs from "fs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import sfuLogo from "../../assets/sfuLogo.png";
-
-/**
- * Returns a random course from a JSON file, filtered by allowed departments and degree level,
- * excluding courses with "Practicum" in the title.
- * Only includes dept, number, units, title, and description.
- */
-function getRandomCourse(filePath, allowedDepts = ["CMPT", "MATH", "BUS"], degreeLevel = "UGRD") {
-  let text;
-  try {
-    text = fs.readFileSync(filePath, "utf8").trim();
-  } catch (err) {
-    console.error("❌ Failed to read file:", err.message);
-    return null;
-  }
-
-  if (!text.startsWith("[")) text = "[" + text;
-  if (!text.endsWith("]")) text = text.replace(/,\s*$/, "") + "]";
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch (err) {
-    console.error("❌ Error parsing JSON:", err.message);
-    return null;
-  }
-
-  const allowedSet = new Set(allowedDepts);
-
-  const filtered = data.filter(
-    (c) =>
-      allowedSet.has(c.dept) &&
-      c.degreeLevel === degreeLevel &&
-      !c.title.toLowerCase().includes("practicum")
-  );
-
-  if (filtered.length === 0) return null;
-
-  const course = filtered[Math.floor(Math.random() * filtered.length)];
-
-  return {
-    dept: course.dept,
-    number: course.number,
-    units: course.units,
-    title: course.title,
-    description: course.description,
-  };
-}
+import mascot from "../../assets/mascot.png";
 
 function Standard() {
-  const [selectedDepts, setSelectedDepts] = useState([]);
-  const [course, setCourse] = useState(null);
-
   const departments = ["EDUC", "CMPT", "BUS", "STAT", "MATH", "PHIL", "PHYS", "ECON", "MACM", "COGS"];
+  const [selectedDepts, setSelectedDepts] = useState([]); // Start unselected
+  const [started, setStarted] = useState(false);
+  const [error, setError] = useState(""); // For on-page error
+
+  // Force body background white and text black
+  useEffect(() => {
+    document.body.style.backgroundColor = "white";
+    document.body.style.color = "black";
+  }, []);
 
   const handleToggle = (dept) => {
     setSelectedDepts((prev) =>
       prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
     );
+    setError(""); // Clear error when toggling
   };
 
-  const handleGenerate = () => {
+  const handleStart = () => {
     if (selectedDepts.length === 0) {
-      alert("Please select at least one department!");
+      setError("Please select at least one department!");
       return;
     }
-    const randomCourse = getRandomCourse("path/to/your/courses.json", selectedDepts);
-    setCourse(randomCourse);
+    setStarted(true);
   };
 
-  return (
-    <div className="flex flex-col items-center justify-start p-6">
-      {/* Header */}
-      <div className="w-1/4 flex flex-row items-center mb-4">
-        <img src={sfuLogo} alt="SFU Logo" className="h-12" />
-        <h1 className="font-bold text-2xl px-2">DLE</h1>
-      </div>
+  const handleBack = () => {
+    setStarted(false);
+    setError("");
+  };
 
-      {/* Filters */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-        {departments.map((dept) => (
-          <label key={dept} className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={selectedDepts.includes(dept)}
-              onChange={() => handleToggle(dept)}
-              className="w-4 h-4"
-            />
-            <span className="text-lg">{dept}</span>
-          </label>
-        ))}
-      </div>
-
-      {/* Generate Button */}
-      <button
-        onClick={handleGenerate}
-        className="px-4 py-2 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition"
-      >
-        🎲 Get Random Course
-      </button>
-
-      {/* Display Result */}
-      {course && (
-        <div className="mt-6 p-4 border rounded-xl shadow-md w-3/4 bg-white">
-          <h2 className="font-bold text-xl mb-1">
-            {course.dept} {course.number} — {course.title}
-          </h2>
-          <p className="text-gray-600 mb-1">{course.units} Units</p>
-          <p>{course.description}</p>
+  if (started) {
+    // ===== NEW BLANK STATE =====
+    return (
+      <div className="min-h-screen bg-white text-black relative flex flex-col items-start">
+        <button
+          onClick={handleBack}
+          className="m-4 px-4 py-2 text-white font-bold text-lg rounded-full border border-black hover:bg-gray-100 transition"
+        >
+          ← Back
+        </button>
+        <div className="flex-1 flex items-center justify-center w-full">
+          {/* Blank state content goes here */}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // ===== ORIGINAL START PAGE =====
+  return (
+    <div className="flex flex-col items-center justify-start min-h-screen bg-white text-black">
+      {/* ===== HEADER ===== */}
+      <div className='flex flex-row items-end w-100 mt-16'>
+        <img src={sfuLogo}></img>
+        <div className='flex flex-col'>
+          <img src={mascot}></img>
+          <h1 className='ml-2 font-bold text-4xl'>
+            DLE
+          </h1>
+        </div>
+      </div>
+
+      {/* ===== FILTERS ===== */}
+      <div className="flex flex-col items-center py-24 w-full">
+        <h3 className="text-2xl font-semibold mb-10 text-black">Select Department(s)</h3>
+
+        <div className="flex flex-wrap justify-center gap-4 w-[600px]">
+          {departments.map((dept) => (
+            <div
+              key={dept}
+              onClick={() => handleToggle(dept)}
+              className={`cursor-pointer px-4 py-2 rounded-xl border-2 border-red-600 text-black font-semibold flex items-center justify-center transition transform
+                ${selectedDepts.includes(dept) ? "bg-red-200" : "bg-white"}
+                hover:scale-105 hover:bg-red-300`}
+            >
+              {dept}
+            </div>
+          ))}
+        </div>
+
+        {/* ===== START BUTTON ===== */}
+          <button
+            onClick={handleStart}
+            className="mt-16 px-12 py-10 text-white font-bold text-3xl rounded-3xl transition w-[300px] h-[75px] hover:scale-105"
+            style={{ backgroundColor: "#CC0633" }}
+          >
+            Start
+        </button>
+
+        {/* ===== ON-PAGE ERROR MESSAGE ===== */}
+        {error && (
+          <div className="mt-4 text-red-600 font-semibold text-lg">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

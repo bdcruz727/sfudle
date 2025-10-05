@@ -7,14 +7,14 @@ function Home() {
     return(
         <div className='flex flex-col items-center justify-start min-h-screen'>
 
-            <div className='flex flex-row items-end w-80 mt-16'>
+            <div className='flex flex-row items-end w-100 mt-16'>
                 <img src={sfuLogo}>
                 
             </img>
             <div className='flex flex-col'>
                 <img src={mascot}>
                 </img>
-                <h1 className='ml-2 font-bold text-3xl'>
+                <h1 className='ml-2 font-bold text-4xl'>
                     DLE
                 </h1>
             </div>

@@ -463,7 +463,7 @@ function Standard() {
             How to Play
         </button>
 
-        {/* ===== ON-PAGE ERROR MESSAGE ===== */}
+        {/* ===== ON-PAGE ERROR MESSAGE ==== */}
         {error && (
           <div className="mt-4 text-red-600 font-semibold text-lg">
             {error}

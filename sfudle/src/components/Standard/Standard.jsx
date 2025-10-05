@@ -11,6 +11,29 @@ function Standard() {
   const [dept, setDept] = useState(''); // state to store input value
   const [number, setNumber] = useState('');
 
+  const [numGuesses, setNumGuesses] = useState(0);
+  const incrementNumGuesses = () => {
+  setNumGuesses(numGuesses => numGuesses + 1)
+  }
+
+  const [detailsList, setDetailsList] = useState([]);
+
+  const addGuess = async (dept, num) => {
+
+    const alreadyGuessed = detailsList.some(
+    (d) => d.dept === dept && d.number === num
+    );
+
+    if (alreadyGuessed) {
+    console.log("Already guessed:", dept, num);
+    return; // don’t add again
+    }
+    
+    const newGuess = [dept, num]
+    const details = await getDetailsGuess(dept, num)
+    setDetailsList(prev => [details, ...prev])
+  }
+
   // Force body background white and text black
   useEffect(() => {
     document.body.style.backgroundColor = "white";
@@ -29,6 +52,7 @@ function Standard() {
       setError("Please select at least one department!");
       return;
     }
+    setNumGuesses(0);
     setStarted(true);
   };
 
@@ -41,6 +65,9 @@ function Standard() {
     event.preventDefault(); // prevent page reload
     try {
       const det = await getDetailsGuess(dept, number); // async call inside handler
+      incrementNumGuesses();
+      console.log(det)
+      addGuess(det.dept, det.number)
       printDetails(det);
     } catch (error) {
       console.error('Error fetching details:', error);
@@ -57,41 +84,110 @@ function Standard() {
     var soc = det.designations.social;
     var sci = det.designations.science;
 
-    alert(`faculty: ${fac}\ndept: ${dept}\nnumber: ${num}\nquantitative: ${quant}\nwriting: ${writ}\nhumanities: ${hum}\nsocial: ${soc}\nscience: ${sci}`);
+    //alert(`faculty: ${fac}\ndept: ${dept}\nnumber: ${num}\nquantitative: ${quant}\nwriting: ${writ}\nhumanities: ${hum}\nsocial: ${soc}\nscience: ${sci}`);
   }
 
   if (started) {
     // ===== NEW BLANK STATE =====
     return (
-      <div className="min-h-screen bg-white text-black relative flex flex-col items-start">
+      <div className="min-h-screen bg-white text-black relative flex flex-col items-center">
 
-        <button
-          onClick={handleBack}
-          className="m-4 px-4 py-2 text-white font-bold text-lg rounded-full border border-black hover:bg-gray-100 transition"
-        >
-          ← Back
-        </button>
 
-        <div className="flex-1 flex items-center justify-center w-full">
+        <div className="flex items-center justify-center w-full p-8">
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="flex flex-row gap-4">
                 <input 
                     type="text" 
                     value={dept} 
                     onChange={(e) => setDept(e.target.value)}
                     placeholder="Department" 
+                    className="border-2 rounded-4xl px-2 py-2"
                 />
                 <input 
                     type="text" 
                     value={number} 
                     onChange={(e) => setNumber(e.target.value)}
-                    placeholder="Course Number" 
+                    placeholder="Course Number"
+                    className="border-2 rounded-4xl px-2 py-2"
                 />
                 <button type="submit">Submit</button>
             </form>
 
         </div>
+        <div>
+            <li className="grid grid-cols-[200px_1fr_1fr_1fr_1fr] gap-2 font-bold">
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Guess
+                </div>
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Faculty
+                </div>
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Department
+                </div>
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Number
+                </div>
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Designation
+                </div>
+            </li>
+        
+        
+        {numGuesses && numGuesses > 0 ? (
+            <div className="mt-4">
+                <ul>
+                    {detailsList.map((details, index) => (
+                    <li key={index} className="grid grid-cols-[200px_1fr_1fr_1fr_1fr] gap-2 mt-4">
+                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center">
+                            {details.dept + " " + details.number}
+                        </div>
+                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center">
+                            {details.faculty}
+                        </div>
+                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center">
+                            {details.dept}
+                        </div>
+                        <div className="h-32 border rounded grid grid-cols-3 text-center">
+                            {String(details.number)
+                            .padStart(3, "0") // ensures 3 digits (e.g. "007")
+                            .split("")
+                            .map((digit, i) => (
+                                <div
+                                key={i}
+                                className={`flex items-center justify-center border-xl ${
+                                    i === 0 ? "bg-red-100" : i === 1 ? "bg-green-100" : "bg-blue-100"
+                                }`}
+                                >
+                                {digit}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center">
+                            {Object.entries(details.designations)
+                            .filter(([key, value]) => value) // keep only true ones
+                            .map(([key]) => (
+                            <span key={key} className="px-2 py-1 mx-1 rounded bg-green-200">
+                                {key}
+                            </span>
+                            ))}
+                        </div>
+                        </li>
+            ))}
+                
+                    
+                </ul>
+            </div>
+        ) : (
+            <div>
+                
+            </div>
+        )
+        }
+        <div className="flex flex-row">
 
+        </div>
+    </div>
       </div>
     );
   }

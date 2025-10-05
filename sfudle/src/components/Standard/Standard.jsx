@@ -8,17 +8,9 @@ function Standard() {
     return(
     
             
-             <div 
-                className="min-h-screen flex flex-col items-center justify-center text-white w-full"
-                style={{
-                    backgroundImage: `url(${standardVictoryImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
-                }}
-            >
+             <div>  
                 <h1>
-                    Standardafjsakjfhkjaeglkasjgkaelkgjklaejglkejklgjesklgjkesjglkjeskgjleksgjeslkjjklsjfkldsjfkdsjflnsdnfkldsjfldsj
+                    Standard
                 </h1>
             </div>
 

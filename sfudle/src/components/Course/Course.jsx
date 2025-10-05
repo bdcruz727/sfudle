@@ -80,7 +80,7 @@ function Course() {
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 w-full justify-center items-center">
             <input
               list="courseOptions"
-              placeholder="DEPT NUM - TITLE"
+              placeholder="Enter Course (i.e. CMPT 120)"
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
               disabled={win}

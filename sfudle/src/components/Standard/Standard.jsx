@@ -57,6 +57,7 @@ function Standard() {
     const newGuess = [dept, num]
     const details = await getDetailsGuess(dept, num)
 
+    incrementNumGuesses();
     const newColours = getColours(ans, guess);
     setColourList(prev => [newColours, ...prev])
     setDetailsList(prev => [details, ...prev])
@@ -125,7 +126,6 @@ function Standard() {
 
       const det = await getDetailsGuess(dept, number); // async call inside handler
       setSubmitError(false);
-      incrementNumGuesses();
       console.log(det)
       addGuess(det.dept, det.number, answer, det)
       printDetails(det);

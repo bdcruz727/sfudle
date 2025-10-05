@@ -28,8 +28,6 @@ const LocationGuessingGame = () => {
     { name: "Transportation Centre", image: TransportationCentre},
     { name: "Shrum Science Centre", image: Shrum},
     { name: "WAC Bennet Library", image: Library},
-
-
   ];
 
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -42,6 +40,7 @@ const LocationGuessingGame = () => {
   const [result, setResult] = useState(null);
   const [gameDisabled, setGameDisabled] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [currentPoints, setCurrentPoints] = useState(100);
   
   const intervalRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -65,6 +64,21 @@ const LocationGuessingGame = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const totalBlocks = 48;
+    const revealedBlocks = hiddenBlocks.length;
+    
+    // Stay at 100 points for first 10 blocks
+    if (revealedBlocks <= 6) {
+      setCurrentPoints(100);
+    } else {
+      // Decrease from 100 to 0 as blocks 11-48 are revealed
+      const remainingBlocks = totalBlocks - revealedBlocks;
+      const points = Math.round((remainingBlocks / (totalBlocks - 6)) * 100);
+      setCurrentPoints(Math.max(0, points));
+    }
+  }, [hiddenBlocks]);
+
   const startNewRound = () => {
     setSelectedLocation(null);
     setSearchValue('');
@@ -72,11 +86,11 @@ const LocationGuessingGame = () => {
     setGameDisabled(false);
     setIsDropdownOpen(false);
     setHiddenBlocks([]);
+    setCurrentPoints(100);
     
     const randomLocation = locations[Math.floor(Math.random() * locations.length)];
     setCurrentLocation(randomLocation);
     
-    // Add this setTimeout wrapper
     setTimeout(() => {
       startRevealingBlocks();
     }, 100);
@@ -115,9 +129,9 @@ const LocationGuessingGame = () => {
     setGameDisabled(true);
     
     if (selectedLocation === currentLocation.name) {
-      const newScore = score + 1;
+      const newScore = score + currentPoints;
       setScore(newScore);
-      setResult({ correct: true, message: '🎉 Correct! Well done!' });
+      setResult({ correct: true, message: `🎉 Correct! +${currentPoints} points!` });
     } else {
       setResult({ correct: false, message: `❌ Incorrect! It was ${currentLocation.name}` });
     }
@@ -142,9 +156,11 @@ const LocationGuessingGame = () => {
         <div className="flex justify-center mt-10">
             <button
             onClick={() => { setGameStarted(true); startNewRound(); }}
-            className="p-5 text-xl font-bold bg-white text-[#CC0633] rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+            className="p-5 text-5xl w-[400px] h-[200px] font-extrabold bg-white text-[#CC0633] rounded-xl shadow-lg hover:scale-[0.98] transition-transform dark:bg-white"
             >
-            Start Game
+                <h1 className='text-4xl'>
+                    Start Game
+                </h1>
             </button>
         </div>
         ) : (
@@ -153,7 +169,7 @@ const LocationGuessingGame = () => {
           🌍 Guess the Location!
         </h1>
         <div className="text-center text-base text-white mb-3">
-          Score: {score} / {total}
+          Score: {score} | Current Round: {currentPoints} points
         </div>
 
         <div className="relative w-full max-w-5xl mx-auto h-[60vh] mb-4 rounded-xl overflow-hidden bg-gray-100 shadow-2xl">

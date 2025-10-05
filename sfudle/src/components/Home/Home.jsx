@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Link }  from 'react-router-dom'
 import sfuLogo from '../../assets/sfuLogo.png'
 import mascot from '../../assets/mascot.png'
+
 
 function Home() {
 
@@ -22,23 +24,30 @@ function Home() {
             </div>
             
             <div className='flex flex-row items-center py-32 gap-16'>
-                <button className='menu-button'>
-                    <h2 className='text-[#fff9fc]'>
-                        Standard
-                    </h2>
-                </button>
+                <Link to="/standard">
+                    <button className='menu-button'>
+                        <h2 className='text-[#fff9fc]'>
+                            Standard
+                        </h2>
+                    </button>
+                </Link>
+           
+                <Link to="/course">
+                    <button className='menu-button'>
+                        <h2>
+                            Course
+                        </h2>
+                    </button>
+                </Link>
 
-                <button className='menu-button'>
-                    <h2>
-                        Course
-                    </h2>
-                </button>
+                <Link to="/location">
+                    <button className='menu-button'>
+                        <h2>
+                            Location
+                        </h2>
+                    </button>
+                </Link>
 
-                <button className='menu-button'>
-                    <h2>
-                        Location
-                    </h2>
-                </button>
             </div>
             
         </div>

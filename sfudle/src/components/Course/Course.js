@@ -1,11 +1,12 @@
 import fs from "fs";
 
 /**
- * Returns a random course from a JSON file, filtered by departments and degree level,
+ * Returns a random course from a JSON file, filtered by allowed departments and degree level,
  * excluding courses with "Practicum" in the title.
  * Only includes dept, number, units, title, and description.
+ * 
  * @param {string} filePath - Path to the JSON file.
- * @param {string[]} allowedDepts - Array of departments to include (default: ["CMPT","MATH","BUS"]).
+ * @param {string[]} allowedDepts - Array of departments to include (e.g., ["CMPT","MATH","BUS"]).
  * @param {string} degreeLevel - Degree level to filter (default: "UGRD").
  * @returns {object|null} - An object with dept, number, units, title, description, or null if no match.
  */
@@ -30,20 +31,19 @@ function getRandomCourse(filePath, allowedDepts = ["CMPT","MATH","BUS"], degreeL
     return null;
   }
 
-  // Filter by allowed departments, degree level, and exclude "Practicum"
   const allowedSet = new Set(allowedDepts);
+
+  // Filter by allowed departments, degree level, and exclude "Practicum"
   const filtered = data.filter(c =>
     allowedSet.has(c.dept) &&
     c.degreeLevel === degreeLevel &&
-    !c.title.toLowerCase().includes("practicum") // exclude if title has "Practicum"
+    !c.title.toLowerCase().includes("practicum")
   );
 
   if (filtered.length === 0) return null;
 
-  // Pick a random course
   const course = filtered[Math.floor(Math.random() * filtered.length)];
 
-  // Return only the requested data points
   return {
     dept: course.dept,
     number: course.number,
@@ -54,7 +54,7 @@ function getRandomCourse(filePath, allowedDepts = ["CMPT","MATH","BUS"], degreeL
 }
 
 // --- Example usage ---
-const course = getRandomCourse("response.json");
+const course = getRandomCourse("response.json", ["CMPT", "MATH"]);
 
 if (course) {
   console.log("🎓 Randomly selected course:");

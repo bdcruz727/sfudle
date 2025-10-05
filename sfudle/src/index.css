@@ -34,7 +34,7 @@ body {
 
 h1 {
 
-  font-size: 3.2em;
+  font-size: 4.8em;
   line-height: 1.1;
 }
 
@@ -65,20 +65,20 @@ button:focus-visible {
 .menu-button {
   border-radius: 64px;
   border: 2px solid transparent;
+  border-color: #1a1a1a;
   padding: 0.3em 1.2em;
   font-size: 2em;
   font-weight: 500;
   font-family: inherit;
   background-color: #a61124;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s border-color 0.2s ease;
+  transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
   width: 256px;
 }
 .menu-button:hover {
   border-color: #000000;
   background:#d64242;
   transform: scale(1.05);
-
 }
 .menu-button:focus,
 .menu-button:focus-visible {

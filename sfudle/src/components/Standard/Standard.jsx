@@ -3,6 +3,7 @@ import { getDetailsGuess, getRandomCourseDetails, getColours } from '../common/g
 import sfuLogo from "../../assets/sfuLogo.png";
 import mascot from "../../assets/mascot.png";
 import { Link }  from 'react-router-dom'
+import allCourses from '../../data/courses.json'
 
 function Standard() {
   const departments = ["EDUC", "CMPT", "BUS", "STAT", "MATH", "PHIL", "PHYS", "ECON", "MACM", "COGS"];
@@ -13,6 +14,24 @@ function Standard() {
   const [number, setNumber] = useState('');
   const [answer, setAnswer] = useState('');
   const [submitError, setSubmitError] = useState(false);
+
+
+  const[win, setWin] = useState(false);
+  const checkWin = (colours) => {
+    const correctColor = "#B1DFA3";
+    
+    return (
+      colours.facultyColour === correctColor &&
+      colours.deptColour === correctColor &&
+      colours.number1Colour === correctColor &&
+      colours.number2Colour === correctColor &&
+      colours.number3Colour === correctColor &&
+      colours.designationColour === correctColor &&
+      colours.unitsColour === correctColor
+    );
+  };  
+
+  const availableCourses = allCourses.filter(course => course.dept === dept);
 
   const [numGuesses, setNumGuesses] = useState(0);
   const incrementNumGuesses = () => {
@@ -40,6 +59,12 @@ function Standard() {
     const newColours = getColours(ans, guess);
     setColourList(prev => [newColours, ...prev])
     setDetailsList(prev => [details, ...prev])
+    console.log(newColours);
+
+    if (checkWin(newColours)) {
+    console.log("Win!");
+    setWin(true);
+    }
   }
 
   // Force body background white and text black
@@ -52,15 +77,25 @@ function Standard() {
     setSelectedDepts((prev) =>
       prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
     );
-    console.log(selectedDepts);
     setError(""); // Clear error when toggling
   };
+
+  const handleSelectAll = () => {
+    if (selectedDepts.length === departments.length){
+      setSelectedDepts([]);
+    }
+    else{
+      setSelectedDepts([...departments]);
+    }
+
+  }
 
   const handleStart = async () => {
     if (selectedDepts.length === 0) {
       setError("Please select at least one department!");
       return;
     }
+    setWin(false);
     setNumGuesses(0);
     setNumber('');
     setDetailsList([]);
@@ -69,6 +104,10 @@ function Standard() {
     if (selectedDepts.length == 1){
       setDept(selectedDepts[0]);
     }
+    else{
+      setDept(selectedDepts[0]);
+    }
+    
     const answer = await getRandomCourseDetails(selectedDepts);
     console.log("Answer " + answer.dept + " " + answer.number);
     setAnswer(answer);
@@ -120,7 +159,7 @@ function Standard() {
     alert(`faculty: ${fac}\ndept: ${dept}\nnum1: ${num1}\nnum2: ${num2}\nnum3: ${num3}\ndesignations: ${des}`);
   }
 
-  function checkWin(colours){
+/*  function checkWin(colours){
     printColours(colours);
     var array = [colours.facultyColour, colours.deptColour, colours.numberColour.num1, colours.numberColour.num2, colours.numberColour.num3, colours.designationColour];
     
@@ -146,7 +185,7 @@ function Standard() {
     alert("You win!!");
     return true
   }
-
+*/
  
 
   if (started) {
@@ -162,7 +201,23 @@ function Standard() {
             </h1>
           </div>
         </div>
+        {win && (<>
+          <div className="mt-4 p-4 bg-green-200 text-green-800 font-bold rounded">
+            🎉 You Win! 🎉 <br>
+            </br>
+            It Took {numGuesses} Guesses!
+          </div>
 
+          <div className="mt-4">
+              <button className='select-button' onClick={handleBack}>
+                  <h2 className='text-[#fff9fc]'>
+                      Play Again
+                  </h2>
+              </button>
+          </div>
+          
+
+       </> )}
         <div className="flex items-center justify-center w-full p-8">
 
             <form onSubmit={handleSubmit} className="flex flex-row gap-4">
@@ -179,12 +234,27 @@ function Standard() {
                 </select>
                 <input 
                     type="text" 
+                    list="courseNumbers"
                     value={number} 
                     onChange={(e) => setNumber(e.target.value)}
-                    placeholder="Course Number  (e.g. 101)"
-                    className="border-2 rounded-4xl px-2 py-2"
+                    placeholder="Course # (e.g. 101)"
+                    className="border-2 rounded-4xl px-2 py-2 text-center"
                 />
-                <button type="submit" className="submit-button">Submit</button>
+
+                <datalist id="courseNumbers">
+                  {availableCourses.map((course) => (
+                    <option key={course.dept + course.number} value={course.number}>
+                      {course.title}
+                    </option>
+                  ))}
+                </datalist>
+              <button 
+                type="submit" 
+                className={`submit-button ${win ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                disabled={win}
+              >
+                Submit
+              </button>
             </form>
 
         </div>
@@ -301,7 +371,7 @@ function Standard() {
 
       {/* ===== FILTERS ===== */}
       <div className="flex flex-col items-center py-24 w-full">
-        <h3 className="text-2xl font-semibold mb-10 text-black">Select Department(s)</h3>
+        <h3 className="text-2xl font-semibold mb-10 text-black">Select Department(s)<br></br>To Guess From</h3>
 
         <div className="flex flex-wrap justify-center gap-4 w-[600px]">
           {departments.map((dept) => (
@@ -309,8 +379,8 @@ function Standard() {
               key={dept}
               onClick={() => handleToggle(dept)}
               className={`cursor-pointer px-4 py-2 rounded-xl border-2 border-red-600 text-black font-semibold flex items-center justify-center transition transform
-                ${selectedDepts.includes(dept) ? "bg-red-200" : "bg-white"}
-                hover:scale-105 hover:bg-red-300`}
+                ${selectedDepts.includes(dept) ? "bg-red-300 hover:bg-red-400" : "bg-white hover:bg-red-200"}
+                hover:scale-105`}
             >
               {dept}
             </div>
@@ -318,6 +388,9 @@ function Standard() {
         </div>
 
         {/* ===== START BUTTON ===== */}
+          <button className="select-button mt-4" onClick={() => handleSelectAll()}>
+            Select/Deselect All
+          </button>
           <button
             onClick={handleStart}
             className="mt-16 px-12 py-10 text-white font-bold text-3xl rounded-3xl transition w-[300px] h-[75px] hover:scale-105"

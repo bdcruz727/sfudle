@@ -76,9 +76,14 @@ export function getCourseDetails(json){
         dept: String(getCourseDept(json)),
         number: String(getCourseNumber(json)),
         designations: getCourseDesignation(json),
-        units: getCourseUnits(json)
+        units: getCourseUnits(json),
+        title: getCourseTitle(json)
     }
     return details;
+}
+
+export function getCourseTitle(json){
+    return json[0].title;
 }
 
 export function getCourseFaculty(json){
@@ -236,7 +241,7 @@ function getNumber3Colour(ansDetails, guessDetails){
     if( ansDetails.number[2] == guessDetails.number[2] ){
         return '#B1DFA3'; 
     }
-    else if( Math.abs(ansDetails.number[2] - guessDetails.number[2] ) <= 2 ){
+    else if( Math.abs(ansDetails.number[2] - guessDetails.number[2] ) <= 1 ){
         return '#FFE681';
     }
     else{

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getDetailsGuess } from '../common/getCourseDetails.js';
 import sfuLogo from "../../assets/sfuLogo.png";
 import mascot from "../../assets/mascot.png";
 
@@ -7,6 +8,8 @@ function Standard() {
   const [selectedDepts, setSelectedDepts] = useState([]); // Start unselected
   const [started, setStarted] = useState(false);
   const [error, setError] = useState(""); // For on-page error
+  const [dept, setDept] = useState(''); // state to store input value
+  const [number, setNumber] = useState('');
 
   // Force body background white and text black
   useEffect(() => {
@@ -34,19 +37,61 @@ function Standard() {
     setError("");
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // prevent page reload
+    try {
+      const det = await getDetailsGuess(dept, number); // async call inside handler
+      printDetails(det);
+    } catch (error) {
+      console.error('Error fetching details:', error);
+    }
+  };
+
+  function printDetails(det){
+    var fac = det.faculty;
+    var dept = det.dept;
+    var num = det.number;
+    var quant = det.designations.quantitative;
+    var writ = det.designations.writing;
+    var hum = det.designations.humanities;
+    var soc = det.designations.social;
+    var sci = det.designations.science;
+
+    alert(`faculty: ${fac}\ndept: ${dept}\nnumber: ${num}\nquantitative: ${quant}\nwriting: ${writ}\nhumanities: ${hum}\nsocial: ${soc}\nscience: ${sci}`);
+  }
+
   if (started) {
     // ===== NEW BLANK STATE =====
     return (
       <div className="min-h-screen bg-white text-black relative flex flex-col items-start">
+
         <button
           onClick={handleBack}
           className="m-4 px-4 py-2 text-white font-bold text-lg rounded-full border border-black hover:bg-gray-100 transition"
         >
           ← Back
         </button>
+
         <div className="flex-1 flex items-center justify-center w-full">
-          {/* Blank state content goes here */}
+
+            <form onSubmit={handleSubmit}>
+                <input 
+                    type="text" 
+                    value={dept} 
+                    onChange={(e) => setDept(e.target.value)}
+                    placeholder="Department" 
+                />
+                <input 
+                    type="text" 
+                    value={number} 
+                    onChange={(e) => setNumber(e.target.value)}
+                    placeholder="Course Number" 
+                />
+                <button type="submit">Submit</button>
+            </form>
+
         </div>
+
       </div>
     );
   }

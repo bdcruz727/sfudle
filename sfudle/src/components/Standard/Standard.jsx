@@ -4,6 +4,7 @@ import sfuLogo from "../../assets/sfuLogo.png";
 import mascot from "../../assets/mascot.png";
 import { Link }  from 'react-router-dom'
 import allCourses from '../../data/courses.json'
+import standardVictory from '../../assets/standardVictoryImage.png'
 
 function Standard() {
   const departments = ["EDUC", "CMPT", "BUS", "STAT", "MATH", "PHIL", "PHYS", "ECON", "MACM", "COGS"];
@@ -209,11 +210,31 @@ function Standard() {
           </div>
 
           <div className="mt-4">
-              <button className='select-button' onClick={handleBack}>
-                  <h2 className='text-[#fff9fc]'>
-                      Play Again
-                  </h2>
-              </button>
+            <div className="relative w-[500px]">
+              <img src={standardVictory}>
+              </img>
+
+              <div className={`absolute top-24 ${numGuesses >= 10 ? "right-10" : "right-12" } text-black px-3 py-1 font-bold text-4xl`}>
+                
+                  {numGuesses}
+               
+              </div>
+
+            </div>
+            <div className="flex flex-col items-center">
+                <button className='select-button mt-4' onClick={handleBack}>
+                    <h2 className='text-[#fff9fc]'>
+                        Play Again
+                    </h2>
+                </button>
+                <Link to='/'>
+                  <button className='select-button mt-4'>
+                      <h2 className='text-[#fff9fc]'>
+                          Return Home
+                      </h2>
+                  </button>
+                </Link>
+              </div>
           </div>
           
 
@@ -370,7 +391,7 @@ function Standard() {
       </Link>
 
       {/* ===== FILTERS ===== */}
-      <div className="flex flex-col items-center py-24 w-full">
+      <div className="flex flex-col items-center py-4 w-full">
         <h3 className="text-2xl font-semibold mb-10 text-black">Select Department(s)<br></br>To Guess From</h3>
 
         <div className="flex flex-wrap justify-center gap-4 w-[600px]">

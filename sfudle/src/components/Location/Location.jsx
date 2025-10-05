@@ -42,6 +42,7 @@ const LocationGuessingGame = () => {
   const [result, setResult] = useState(null);
   const [gameDisabled, setGameDisabled] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [currentPoints, setCurrentPoints] = useState(100);
   const [gameOver, setGameOver] = useState(false);
   
@@ -147,9 +148,9 @@ const LocationGuessingGame = () => {
     setHiddenBlocks(Array.from({ length: 48 }, (_, i) => i));
   };
 
-  const filteredLocations = locations.filter(loc =>
-    loc.name.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filteredLocations = locations
+    .filter(loc => loc.name.toLowerCase().includes(searchValue.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleLocationSelect = (name) => {
     setSelectedLocation(name);
@@ -162,16 +163,55 @@ const LocationGuessingGame = () => {
   return (
     <div className="h-screen bg-gradient-to-br from-[#CC0633] to-[#990426] flex flex-col p-8 overflow-y-auto">
 
-        {!gameStarted ? (
-        <div className="flex justify-center mt-10">
+        {!gameStarted && !showInstructions ? (
+        <div className="flex flex-col items-center justify-center mt-10 gap-4">
             <button
-            onClick={() => { setGameStarted(true); startNewRound(); }}
-            className="p-5 text-5xl w-[400px] h-[200px] font-extrabold bg-white text-[#CC0633] rounded-xl shadow-lg hover:scale-[0.98] transition-transform dark:bg-white"
+            onClick={() => setShowInstructions(true)}
+            className="p-5 text-5xl w-[400px] h-[200px] font-extrabold bg-white text-[#CC0633] rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
             >
                 <h1 className='text-4xl'>
                     Start Game
                 </h1>
             </button>
+        </div>
+        ) : showInstructions && !gameStarted ? (
+        <div className="flex items-center justify-center mt-10">
+            <div className="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl">
+              <h1 className="text-4xl font-bold text-[#CC0633] mb-6 text-center">How to Play</h1>
+              <div className="text-lg text-gray-800 space-y-4 mb-8">
+                <p>
+                  When you start, the image will slowly be revealed. As more of the image is revealed, 
+                  the potential points for your guess is reduced.
+                </p>
+                <p>
+                  Once the image is fully revealed you will receive 0 points for your guess.
+                </p>
+                <p>
+                    You only get one guess per image, so be careful!
+                </p>
+                <p className="font-bold text-[#CC0633]">
+                  Do your best to guess the locations as fast as possible for a max of 600 points total!
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowInstructions(false)}
+                  className="flex-1 p-4 text-xl font-bold bg-gray-400 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => { 
+                    setShowInstructions(false); 
+                    setGameStarted(true); 
+                    startNewRound(); 
+                  }}
+                  className="flex-1 p-4 text-xl font-bold bg-[#CC0633] text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                >
+                  Let's Go!
+                </button>
+              </div>
+            </div>
         </div>
         ) : (
         <>
@@ -299,7 +339,7 @@ const LocationGuessingGame = () => {
                 </button>
                 <Link to="/">
                     <button
-                    className="p-4 text-xl font-bold bg-gray-600 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                    className="p-4 w-full text-xl font-bold bg-gray-600 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
                     >
                     Return to Home
                     </button>

@@ -2,10 +2,22 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const facultyDict = {
-    "cmpt": "applied science",
-    "bus": "beedie",
-    "math": "science"
+    "cmpt": "Applied Sciences",
+    "bus": "Beedie School of Business",
+    "math": "Science",
+    "educ": "Education",
+    "stat": "Science",
+    "phil": "Arts and Social Sciences",
+    "phys": "Science",
+    "econ": "Arts and Social Sciences",
+    "macm": "Science",
+    "cogs": "Arts and Social Sciences"
 }
+
+export const departments = [
+  "BUS", "CMPT", "COGS", "ECON", "EDUC", "MACM",
+  "MATH", "PHIL", "PHYS", "STAT", 
+];
 
 /* details format
 var details = {
@@ -26,13 +38,28 @@ export async function getDetailsGuess(dept, number){
 }
 
 export async function getRandomCourseDetails(allowedDepts){
-    var courses = await getJSONAll();
-    const result = courses.filter(course => allowedDepts.includes(course.dept) && course.degreeLevel == "UGRD");
-    
-    var max = result.length;
-    var i = Math.floor(Math.random() * (max + 1));
-    const j = [result[i]];
-    var details = getCourseDetails(j);
+    const courses = await getJSONAll();
+    const result = courses.filter(
+        course => allowedDepts.includes(course.dept) && course.degreeLevel === "UGRD"
+    );
+
+    if (result.length === 0) {
+        throw new Error("No courses found for the selected departments");
+    }
+
+    let details;
+    while (!details) {
+        const i = Math.floor(Math.random() * result.length); // use result.length, not +1
+        const candidate = result[i];
+        if (!candidate) continue; // if undefined, pick again
+
+        details = getCourseDetails([candidate]);
+        if (!details) {
+            console.warn("Picked undefined course, retrying...");
+            details = null; // loop continues
+        }
+    }
+
     return details;
 }
 
@@ -48,7 +75,8 @@ export function getCourseDetails(json){
         faculty: String(getCourseFaculty(json)),
         dept: String(getCourseDept(json)),
         number: String(getCourseNumber(json)),
-        designations: getCourseDesignation(json)
+        designations: getCourseDesignation(json),
+        units: getCourseUnits(json)
     }
     return details;
 }
@@ -64,6 +92,10 @@ export function getCourseDept(json){
 
 export function getCourseNumber(json){
     return json[0].number;
+}
+
+export function getCourseUnits(json){
+    return json[0].units;
 }
 
 export function getCourseDesignation(json){
@@ -94,11 +126,11 @@ export function getCourseDesignation(json){
     const desig = json[0].designation;
 
     var designations = {
-        quantitative: isQuantitative(desig),
-        writing: isWriting(desig),
-        humanities: isHumanities(desig),
-        social: isSocialScience(desig),
-        science: isScience(desig)
+        Quantitative: isQuantitative(desig),
+        Writing: isWriting(desig),
+        Humanities: isHumanities(desig),
+        Social: isSocialScience(desig),
+        Science: isScience(desig)
     }
 
     return designations;
@@ -109,8 +141,11 @@ export function getColours(ansDetails, guessDetails){
     var colours = {
         facultyColour: String(getFacultyColour(ansDetails, guessDetails)),
         deptColour: String(getDeptColour(ansDetails, guessDetails)),
-        numberColour: getNumberColour(ansDetails, guessDetails),
-        designationColour: String(getDesignationColour(ansDetails, guessDetails))
+        number1Colour: getNumber1Colour(ansDetails, guessDetails),
+        number2Colour: getNumber2Colour(ansDetails, guessDetails),
+        number3Colour: getNumber3Colour(ansDetails, guessDetails),
+        designationColour: String(getDesignationColour(ansDetails, guessDetails)),
+        unitsColour: String(getUnitsColour(ansDetails, guessDetails))
     }
 
     return colours;
@@ -123,68 +158,90 @@ async function getJSONAll(){
 }
 
 function isQuantitative(string){
-    string = string.toLowerCase();
-    if(string.includes("q")){ return true; }
+    const newString = string.toLowerCase();
+    if(newString.includes("q")){ return true; }
     return false;
 }
 
 function isWriting(string){
-    string = string.toLowerCase();
-    if(string.includes("w")){ return true; }
+    const newString = string.toLowerCase();
+    if(newString.includes("w")){ return true; }
     return false;
 }
 
 function isHumanities(string){
-    string = string.toLowerCase();
-    if(string.includes("hum")){ return true; }
+
+    const newString = string.toLowerCase();
+    if(newString.includes("hum")){ return true; }
     return false;
 }
 
 function isSocialScience(string){
-    string = string.toLowerCase();
-    if(string.includes("soc")){ return true; }
+    const newString = string.toLowerCase();
+    if(newString.includes("soc")){ return true; }
     return false;
 }
 
 function isScience(string){
-    string = string.toLowerCase();
-    if( string.includes("-sci") || string.includes("/sci") ){ return true; }
+    const newString = string.toLowerCase();
+    if( newString.includes("-sci") || newString.includes("/sci") ){ return true; }
     return false;
 }
 
 
 function getFacultyColour(ansDetails, guessDetails){
-    if( ansDetails.faculty == guessDetails.faculty ){ return 2; }
-    return 0;
+    if( ansDetails.faculty == guessDetails.faculty ){ return "#B1DFA3"; }
+    return "#FD9999";
 }
 
 function getDeptColour(ansDetails, guessDetails){
-    if( ansDetails.dept == guessDetails.dept ){ return 2; }
-    return 0;
+    if( ansDetails.dept == guessDetails.dept ){return "#B1DFA3"; }
+    return "#FD9999";
 }
 
-function getNumberColour(ansDetails, guessDetails){
-    var array = [0, 0, 0];
-
-    for (let i = 0; i < array.length; i++) {
-        if( ansDetails.number[i] == guessDetails.number[i] ){
-            array[i] = 2; 
-        }
-        else if( Math.abs(ansDetails.number[i] - guessDetails.number[i] ) <= 1 ){
-            array[i] = 1;
-        }
-        else{
-            array[i] = 0;
-        }
+function getUnitsColour(ansDetails, guessDetails){
+    if (ansDetails.units == guessDetails.units){return "#B1DFA3"}
+    else if (Math.abs(ansDetails.units - guessDetails.units) == 1) {return "#FFE781"}
+    else{
+        return "#FD9999";
     }
+    
+}
 
-    const numColours = {
-        num1: String(array[0]),
-        num2: String(array[1]),
-        num3: String(array[2])
+function getNumber1Colour(ansDetails, guessDetails){
+    if( ansDetails.number[0] == guessDetails.number[0] ){
+        return '#B1DFA3'; 
     }
+    else if( Math.abs(ansDetails.number[0] - guessDetails.number[0] ) <= 1 ){
+        return '#FFE681';
+    }
+    else{
+        return '#FD9999';
+    }
+}
 
-    return numColours;
+function getNumber2Colour(ansDetails, guessDetails){
+    if( ansDetails.number[1] == guessDetails.number[1] ){
+        return '#B1DFA3'; 
+    }
+    else if( Math.abs(ansDetails.number[1] - guessDetails.number[1] ) <= 1 ){
+        return '#FFE681';
+    }
+    else{
+        return '#FD9999';
+    }
+}
+
+function getNumber3Colour(ansDetails, guessDetails){
+    if( ansDetails.number[2] == guessDetails.number[2] ){
+        return '#B1DFA3'; 
+    }
+    else if( Math.abs(ansDetails.number[2] - guessDetails.number[2] ) <= 2 ){
+        return '#FFE681';
+    }
+    else{
+        return '#FD9999';
+    }
 }
 
 function getDesignationColour(ansDetails, guessDetails){
@@ -196,16 +253,16 @@ function getDesignationColour(ansDetails, guessDetails){
         i++;
     }
     if(i == 5){
-        return 2;
+        return "#B1DFA3";
     }
 
     for (const des in ansDetails.designations) {
         if(ansDetails.designations[des] == true && guessDetails.designations[des] == true){
-            return 1;
+            return "#FFE681";
         }
     }
 
-    return 0;
+    return "#FD9999";
 }
 
 

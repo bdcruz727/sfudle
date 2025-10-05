@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-slide-in {
+  opacity: 0; /* start hidden */
+  animation: fadeSlideIn 0.5s ease forwards;
+}
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,12 +52,11 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 h1 {
@@ -74,6 +101,7 @@ button:focus-visible {
   cursor: pointer;
   transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
   width: 256px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 .menu-button:hover {
   border-color: #000000;
@@ -84,6 +112,32 @@ button:focus-visible {
 .menu-button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+.submit-button {
+  border-radius: 64px;
+  border: 2px solid transparent;
+  border-color: #1a1a1a;
+  padding: 0.3em 1.2em;
+  color: #ffffff;
+  font-size: 1.5em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #F85353;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
+  width: 256px;
+}
+.submit-button:hover {
+  border-color: #000000;
+  background:#d64242;
+  transform: scale(1.05);
+}
+.submit-button:focus,
+.submit-button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+
 
 @media (prefers-color-scheme: light) {
   :root {

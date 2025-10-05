@@ -11,6 +11,7 @@ import Library from '../../assets/locationImages/library.webp'
 import Shrum from '../../assets/locationImages/shrum.jpg'
 import TransportationCentre from '../../assets/locationImages/transportation.jpeg'
 import RCB from '../../assets/locationImages/rcb.jpg'
+import SFULogo from '../../assets/sfuLogo.png'
 
 
 
@@ -68,11 +69,11 @@ const LocationGuessingGame = () => {
     const totalBlocks = 48;
     const revealedBlocks = hiddenBlocks.length;
     
-    // Stay at 100 points for first 10 blocks
+    // Stay at 100 points for first 6 blocks
     if (revealedBlocks <= 6) {
       setCurrentPoints(100);
     } else {
-      // Decrease from 100 to 0 as blocks 11-48 are revealed
+      // Decrease from 100 to 0 as blocks 7-48 are revealed
       const remainingBlocks = totalBlocks - revealedBlocks;
       const points = Math.round((remainingBlocks / (totalBlocks - 6)) * 100);
       setCurrentPoints(Math.max(0, points));
@@ -164,105 +165,109 @@ const LocationGuessingGame = () => {
             </button>
         </div>
         ) : (
-    <div className="h-screen bg-gradient-to-br from-[#CC0633] to-[#990426] flex flex-col p-8 overflow-y-auto">
-        <h1 className="text-3xl font-bold text-center text-white mb-1">
-          🌍 Guess the Location!
-        </h1>
-        <div className="text-center text-base text-white mb-3">
-          Score: {score} | Current Round: {currentPoints} points
-        </div>
+        <>
+            <div className='flex flex-row items-center justify-center'>
+               <img src={SFULogo} alt="SFU Logo" className='h-16 p-4' />
+               <h1 className="text-3xl font-bold text-center text-white mb-1">
+                   Guess the Location!
+               </h1> 
+            </div>
+            
+            <div className="text-center text-base text-white mb-3">
+              Score: {score} | Current Round: {currentPoints} points
+            </div>
 
-        <div className="relative w-full max-w-5xl mx-auto h-[60vh] mb-4 rounded-xl overflow-hidden bg-gray-100 shadow-2xl">
-          {currentLocation && (
-            <img
-              src={currentLocation.image}
-              alt="Location"
-              className="w-full h-full object-cover"
-            />
-          )}
-          <div className="absolute top-0 left-0 w-full h-full grid grid-cols-8 grid-rows-6">
-            {Array.from({ length: 48 }, (_, i) => (
-              <div
-                key={i}
-                className={`bg-black ${
-                    hiddenBlocks.includes(i) ? 'opacity-0 transition-opacity duration-700' : 'opacity-100'
-                  }`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {result && (
-          <div
-            className={`text-center p-3 rounded-xl mb-3 text-base font-bold max-w-5xl mx-auto ${
-              result.correct
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}
-          >
-            {result.message}
-          </div>
-        )}
-
-        <div className="relative mb-3 max-w-5xl mx-auto w-full" ref={dropdownRef}>
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onFocus={() => setIsDropdownOpen(true)}
-            onClick={() => setIsDropdownOpen(true)}
-            placeholder="Search and select a location..."
-            disabled={gameDisabled}
-            className={`w-full p-3 text-black border-2 outline-none transition-colors bg-white ${
-              isDropdownOpen
-                ? 'border-white rounded-t-xl'
-                : 'border-white rounded-xl'
-            } ${gameDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-          />
-          
-          {isDropdownOpen && !gameDisabled && (
-            <div className="absolute top-full left-0 right-0 max-h-64 overflow-y-auto border-2 border-t-0 border-white rounded-b-xl bg-white z-10 shadow-lg">
-              {filteredLocations.length === 0 ? (
-                <div className="p-3 text-gray-500">No locations found</div>
-              ) : (
-                filteredLocations.map((location) => (
+            <div className="relative w-full max-w-5xl mx-auto h-[60vh] mb-4 rounded-xl overflow-hidden bg-gray-100 shadow-2xl">
+              {currentLocation && (
+                <img
+                  src={currentLocation.image}
+                  alt="Location"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div className="absolute top-0 left-0 w-full h-full grid grid-cols-8 grid-rows-6">
+                {Array.from({ length: 48 }, (_, i) => (
                   <div
-                    key={location.name}
-                    onClick={() => handleLocationSelect(location.name)}
-                    className={`p-3 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors ${
-                      selectedLocation === location.name
-                        ? 'bg-[#CC0633] text-white'
-                        : 'hover:bg-gray-100 text-black'
-                    }`}
-                  >
-                    {location.name}
-                  </div>
-                ))
+                    key={i}
+                    className={`bg-black ${
+                        hiddenBlocks.includes(i) ? 'opacity-0 transition-opacity duration-700' : 'opacity-100'
+                      }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {result && (
+              <div
+                className={`text-center p-3 rounded-xl mb-3 text-base font-bold max-w-5xl mx-auto ${
+                  result.correct
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {result.message}
+              </div>
+            )}
+
+            <div className="relative mb-3 max-w-5xl mx-auto w-full" ref={dropdownRef}>
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onFocus={() => setIsDropdownOpen(true)}
+                onClick={() => setIsDropdownOpen(true)}
+                placeholder="Search and select a location..."
+                disabled={gameDisabled}
+                className={`w-full p-3 text-black border-2 outline-none transition-colors bg-white ${
+                  isDropdownOpen
+                    ? 'border-white rounded-t-xl'
+                    : 'border-white rounded-xl'
+                } ${gameDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              />
+              
+              {isDropdownOpen && !gameDisabled && (
+                <div className="absolute top-full left-0 right-0 max-h-64 overflow-y-auto border-2 border-t-0 border-white rounded-b-xl bg-white z-10 shadow-lg">
+                  {filteredLocations.length === 0 ? (
+                    <div className="p-3 text-gray-500">No locations found</div>
+                  ) : (
+                    filteredLocations.map((location) => (
+                      <div
+                        key={location.name}
+                        onClick={() => handleLocationSelect(location.name)}
+                        className={`p-3 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors ${
+                          selectedLocation === location.name
+                            ? 'bg-[#CC0633] text-white'
+                            : 'hover:bg-gray-100 text-black'
+                        }`}
+                      >
+                        {location.name}
+                      </div>
+                    ))
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
 
-        <div className="flex gap-3 max-w-5xl mx-auto w-full">
-          {!result ? (
-            <button
-              onClick={handleSubmit}
-              disabled={gameDisabled}
-              className="flex-1 p-3 text-base font-bold bg-white text-[#CC0633] rounded-xl transition-transform hover:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-            >
-              Submit Guess
-            </button>
-          ) : (
-            <button
-              onClick={startNewRound}
-              className="flex-1 p-3 text-base font-bold bg-white text-green-600 rounded-xl transition-transform hover:scale-[0.98] shadow-lg"
-            >
-              Next Location
-            </button>
-          )}
-        </div>
-      </div>
-    )}
+            <div className="flex gap-3 max-w-5xl mx-auto w-full">
+              {!result ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={gameDisabled}
+                  className="flex-1 p-3 text-base font-bold bg-white text-[#CC0633] rounded-xl transition-transform hover:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                >
+                  Submit Guess
+                </button>
+              ) : (
+                <button
+                  onClick={startNewRound}
+                  className="flex-1 p-3 text-base font-bold bg-white text-green-600 rounded-xl transition-transform hover:scale-[0.98] shadow-lg"
+                >
+                  Next Location
+                </button>
+              )}
+            </div>
+        </>
+        )}
     </div>
     
   );

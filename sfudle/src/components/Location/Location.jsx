@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link }  from 'react-router-dom'
 import AQPond from '../../assets/locationImages/AQPond.jpg'
 import ConvoMall from '../../assets/locationImages/ConvocationMall.jpg'
 import DiningCommons from '../../assets/locationImages/DiningCommons.jpg'
@@ -42,6 +43,7 @@ const LocationGuessingGame = () => {
   const [gameDisabled, setGameDisabled] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [currentPoints, setCurrentPoints] = useState(100);
+  const [gameOver, setGameOver] = useState(false);
   
   const intervalRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -137,6 +139,11 @@ const LocationGuessingGame = () => {
       setResult({ correct: false, message: `❌ Incorrect! It was ${currentLocation.name}` });
     }
     
+    // Check if game is over after 6 rounds
+    if (newTotal >= 6) {
+      setGameOver(true);
+    }
+    
     setHiddenBlocks(Array.from({ length: 48 }, (_, i) => i));
   };
 
@@ -149,6 +156,8 @@ const LocationGuessingGame = () => {
     setSearchValue(name);
     setIsDropdownOpen(false);
   };
+
+
 
   return (
     <div className="h-screen bg-gradient-to-br from-[#CC0633] to-[#990426] flex flex-col p-8 overflow-y-auto">
@@ -174,7 +183,7 @@ const LocationGuessingGame = () => {
             </div>
             
             <div className="text-center text-base text-white mb-3">
-              Score: {score} | Current Round: {currentPoints} points
+              Score: {score} | Round: {total}/6 | Current Round: {currentPoints} points
             </div>
 
             <div className="relative w-full max-w-5xl mx-auto h-[60vh] mb-4 rounded-xl overflow-hidden bg-gray-100 shadow-2xl">
@@ -262,11 +271,43 @@ const LocationGuessingGame = () => {
                   onClick={startNewRound}
                   className="flex-1 p-3 text-base font-bold bg-white text-green-600 rounded-xl transition-transform hover:scale-[0.98] shadow-lg"
                 >
-                  Next Location
+                  {total >= 6 ? 'View Final Score' : 'Next Location'}
                 </button>
               )}
             </div>
         </>
+        )}
+        
+        {gameOver && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-md">
+              <p className="text-4xl font-bold text-[#CC0633] mb-4">Game Over!</p>
+              <p className="text-2xl mb-2">Final Score</p>
+              <p className="text-6xl font-bold text-[#CC0633] mb-6">{score}</p>
+              <p className="text-xl mb-6">You completed 6 rounds!</p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setScore(0);
+                    setTotal(0);
+                    setGameOver(false);
+                    setGameStarted(false);
+                  }}
+                  className="p-4 text-xl font-bold bg-[#CC0633] text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                >
+                  Play Again
+                </button>
+                <Link to="/">
+                    <button
+                    className="p-4 text-xl font-bold bg-gray-600 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                    >
+                    Return to Home
+                    </button>
+                </Link>
+                
+              </div>
+            </div>
+          </div>
         )}
     </div>
     

@@ -1,11 +1,39 @@
 @import "tailwindcss";
 
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-slide-in {
+  opacity: 0; /* start hidden */
+  animation: fadeSlideIn 0.5s ease forwards;
+}
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -24,12 +52,12 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
 }
 
 h1 {
@@ -64,26 +92,92 @@ button:focus-visible {
 
 .menu-button {
   border-radius: 64px;
-  border: 2px solid transparent;
+  border: 0px solid transparent;
   border-color: #1a1a1a;
   padding: 0.3em 1.2em;
   font-size: 2em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #a61124;
+  background-color: #D64242;
   cursor: pointer;
   transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
   width: 256px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 .menu-button:hover {
   border-color: #000000;
-  background:#d64242;
+  background-color: #f67a7aff;
   transform: scale(1.05);
 }
 .menu-button:focus,
 .menu-button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+.submit-button {
+  border-radius: 64px;
+  border: 2px solid transparent;
+  border-color: #1a1a1a;
+  padding: 0.3em 1.2em;
+  color: #ffffff;
+  font-size: 1.5em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #F85353;
+  transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
+  width: 192px;
+}
+.submit-button:hover {
+  border-color: #000000;
+  background:#d64242;
+  transform: scale(1.05);
+}
+.submit-button:focus,
+.submit-button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.select-button {
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  border-color: #1a1a1a;
+  padding: 0.3em 1.2em;
+  color: #ffffff;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #CC0633;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
+  width: 256px;
+}
+.select-button:hover {
+  border-color: #000000;
+  background:#d64242;
+  transform: scale(1.05);
+}
+
+.close-button {
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  border-color: #1a1a1a;
+  padding: 0.3em 1.2em;
+  color: #ffffff;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #CC0633;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s border-color 0.2s ease;
+  width: 128px;
+}
+.close-button:hover {
+  border-color: #000000;
+  background:#d64242;
+  transform: scale(1.05);
+}
+
+
 
 @media (prefers-color-scheme: light) {
   :root {

@@ -18,13 +18,21 @@ var details = {
 
 
 
-
-
-
 export async function getDetailsGuess(dept, number){
     var j = await getJSON(dept, number);
     var details = getCourseDetails(j);
 
+    return details;
+}
+
+export async function getRandomCourseDetails(allowedDepts){
+    var courses = await getJSONAll();
+    const result = courses.filter(course => allowedDepts.includes(course.dept) && course.degreeLevel == "UGRD");
+    
+    var max = result.length;
+    var i = Math.floor(Math.random() * (max + 1));
+    const j = [result[i]];
+    var details = getCourseDetails(j);
     return details;
 }
 
@@ -99,13 +107,19 @@ export function getCourseDesignation(json){
 export function getColours(ansDetails, guessDetails){
     //2 is green, 1 is yellow, 0 is red
     var colours = {
-        facultyColour: getFacultyColour(ansDetails, guessDetails),
-        deptColour: getDeptColour(ansDetails, guessDetails),
+        facultyColour: String(getFacultyColour(ansDetails, guessDetails)),
+        deptColour: String(getDeptColour(ansDetails, guessDetails)),
         numberColour: getNumberColour(ansDetails, guessDetails),
-        designationColours: getDesignationColour(ansDetails, guessDetails)
+        designationColour: String(getDesignationColour(ansDetails, guessDetails))
     }
 
     return colours;
+}
+
+async function getJSONAll(){
+    const response = await fetch('https://api.sfucourses.com/v1/rest/outlines?');
+    const json = await response.json();     
+    return json;
 }
 
 function isQuantitative(string){
@@ -174,18 +188,26 @@ function getNumberColour(ansDetails, guessDetails){
 }
 
 function getDesignationColour(ansDetails, guessDetails){
-    if( ansDetails.designations == guessDetails.designations ){ 
+    var i = 0;
+    for (const des in ansDetails.designations) {
+        if(ansDetails.designations[des] != guessDetails.designations[des]){
+            break;
+        }
+        i++;
+    }
+    if(i == 5){
         return 2;
     }
 
     for (const des in ansDetails.designations) {
-        if(ansDetails.designations[des] == guessDetails.designations[des]){
+        if(ansDetails.designations[des] == true && guessDetails.designations[des] == true){
             return 1;
         }
     }
 
     return 0;
 }
+
 
 
 

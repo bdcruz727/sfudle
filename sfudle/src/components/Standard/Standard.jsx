@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getDetailsGuess } from '../common/getCourseDetails.js';
+import { getDetailsGuess, getRandomCourseDetails, getColours } from '../common/getCourseDetails.js';
 import sfuLogo from "../../assets/sfuLogo.png";
 import mascot from "../../assets/mascot.png";
 
@@ -10,6 +10,7 @@ function Standard() {
   const [error, setError] = useState(""); // For on-page error
   const [dept, setDept] = useState(''); // state to store input value
   const [number, setNumber] = useState('');
+  const [answer, setAnswer] = useState('');
 
   // Force body background white and text black
   useEffect(() => {
@@ -24,12 +25,14 @@ function Standard() {
     setError(""); // Clear error when toggling
   };
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (selectedDepts.length === 0) {
       setError("Please select at least one department!");
       return;
     }
     setStarted(true);
+    const answer = await getRandomCourseDetails(selectedDepts);
+    setAnswer(answer);
   };
 
   const handleBack = () => {
@@ -40,8 +43,12 @@ function Standard() {
   const handleSubmit = async (event) => {
     event.preventDefault(); // prevent page reload
     try {
-      const det = await getDetailsGuess(dept, number); // async call inside handler
-      printDetails(det);
+      const guess = await getDetailsGuess(dept, number); // async call inside handler
+      printDetails(answer);
+      printDetails(guess);
+      const colours = getColours(answer, guess);
+      checkWin(colours);
+
     } catch (error) {
       console.error('Error fetching details:', error);
     }
@@ -59,6 +66,46 @@ function Standard() {
 
     alert(`faculty: ${fac}\ndept: ${dept}\nnumber: ${num}\nquantitative: ${quant}\nwriting: ${writ}\nhumanities: ${hum}\nsocial: ${soc}\nscience: ${sci}`);
   }
+
+  function printColours(colours){
+    var fac = colours.facultyColour;
+    var dept = colours.deptColour;
+    var num1 = colours.numberColour.num1;
+    var num2 = colours.numberColour.num2;
+    var num3 = colours.numberColour.num3;
+    var des = colours.designationColour;
+    
+    alert(`faculty: ${fac}\ndept: ${dept}\nnum1: ${num1}\nnum2: ${num2}\nnum3: ${num3}\ndesignations: ${des}`);
+  }
+
+  function checkWin(colours){
+    printColours(colours);
+    var array = [colours.facultyColour, colours.deptColour, colours.numberColour.num1, colours.numberColour.num2, colours.numberColour.num3, colours.designationColour];
+    
+    if(colours.facultyColour != "2"){
+        return false;
+    }
+    if(colours.deptColour != "2"){
+        return false;
+    }
+    if(colours.numberColour.num1 != "2"){
+        return false;
+    }
+    if(colours.numberColour.num2 != "2"){
+        return false;
+    }
+    if(colours.numberColour.num3 != "2"){
+        return false;
+    }
+    if(colours.designationColour != "2"){
+        return false;
+    }
+    
+    alert("You win!!");
+    return true
+  }
+
+ 
 
   if (started) {
     // ===== NEW BLANK STATE =====

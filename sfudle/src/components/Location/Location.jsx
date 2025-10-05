@@ -196,7 +196,7 @@ const LocationGuessingGame = () => {
               <div className="flex gap-4">
                 <button
                   onClick={() => setShowInstructions(false)}
-                  className="flex-1 p-4 text-xl font-bold bg-gray-400 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                  className="flex-1 p-4 text-xl font-bold bg-gray-400 text-black rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
                 >
                   Back
                 </button>
@@ -206,7 +206,7 @@ const LocationGuessingGame = () => {
                     setGameStarted(true); 
                     startNewRound(); 
                   }}
-                  className="flex-1 p-4 text-xl font-bold bg-[#CC0633] text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                  className="flex-1 p-4 text-xl font-bold bg-[#CC0633] text-black rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
                 >
                   Let's Go!
                 </button>

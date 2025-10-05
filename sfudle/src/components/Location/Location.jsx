@@ -333,13 +333,14 @@ const LocationGuessingGame = () => {
                     setGameOver(false);
                     setGameStarted(false);
                   }}
-                  className="p-4 text-xl font-bold bg-[#CC0633] text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                  className="p-4 text-xl font-bold bg-[#CC0633] text-black rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
                 >
                   Play Again
                 </button>
                 <Link to="/">
                     <button
                     className="p-4 w-full text-xl font-bold bg-gray-600 text-white rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
+                    className="p-4 text-xl font-bold bg-gray-600 text-black rounded-xl shadow-lg hover:scale-[0.98] transition-transform"
                     >
                     Return to Home
                     </button>

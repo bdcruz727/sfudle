@@ -13,8 +13,11 @@ function Standard() {
   const [error, setError] = useState(""); // For on-page error
   const [dept, setDept] = useState(''); // state to store input value
   const [number, setNumber] = useState('');
+  const [courseGuessed, setCourseGuessed] = useState('')
   const [answer, setAnswer] = useState('');
+
   const [submitError, setSubmitError] = useState(false);
+  const [isCooldown, setIsCooldown] = useState(false);
 
 
   const[win, setWin] = useState(false);
@@ -33,6 +36,7 @@ function Standard() {
   };  
 
   const availableCourses = allCourses.filter(course => course.dept === dept);
+  const selectedCourseCourses = allCourses.filter(course => selectedDepts.includes(course.dept));
 
   const [numGuesses, setNumGuesses] = useState(0);
   const incrementNumGuesses = () => {
@@ -54,9 +58,10 @@ function Standard() {
     return; // don’t add again
     }
     
-    const newGuess = [dept, num]
-    const details = await getDetailsGuess(dept, num)
+    const formattedGuess = dept.toUpperCase() + " " + num;
+    const details = await getDetailsGuess(formattedGuess)
 
+    incrementNumGuesses();
     const newColours = getColours(ans, guess);
     setColourList(prev => [newColours, ...prev])
     setDetailsList(prev => [details, ...prev])
@@ -101,6 +106,7 @@ function Standard() {
     setNumber('');
     setDetailsList([]);
     setColourList([]);
+    setCourseGuessed('');
     setStarted(true);
     if (selectedDepts.length == 1){
       setDept(selectedDepts[0]);
@@ -120,20 +126,29 @@ function Standard() {
   };
 
   const handleSubmit = async (event) => {
+
     event.preventDefault(); // prevent page reload
+
+    if (isCooldown) return;
+
+    setIsCooldown(true);
+
     try {
 
-      const det = await getDetailsGuess(dept, number); // async call inside handler
+      const det = await getDetailsGuess(courseGuessed); // async call inside handler
       setSubmitError(false);
-      incrementNumGuesses();
       console.log(det)
       addGuess(det.dept, det.number, answer, det)
       printDetails(det);
+      setCourseGuessed('');
 
     } catch (error) {
       setSubmitError(true);
       console.error('Error fetching details:', error);
     }
+      setTimeout(() => {
+      setIsCooldown(false);
+      }, 500);
   };
 
   function printDetails(det){
@@ -242,29 +257,17 @@ function Standard() {
         <div className="flex items-center justify-center w-full p-8">
 
             <form onSubmit={handleSubmit} className="flex flex-row gap-4">
-                <select
-                  value={dept}
-                  onChange={(e) => setDept(e.target.value)}
-                  className="border-2 rounded px-2 py-2 w-32 max-h-40 overflow-y-scroll"
-                >
-                  {selectedDepts.sort().map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
                 <input 
                     type="text" 
                     list="courseNumbers"
-                    value={number} 
-                    onChange={(e) => setNumber(e.target.value)}
-                    placeholder="Course # (e.g. 101)"
+                    value={courseGuessed} 
+                    onChange={(e) => setCourseGuessed(e.target.value)}
+                    placeholder="Enter Course (e.g. CMPT 120)"
                     className="border-2 rounded-4xl px-2 py-2 text-center"
                 />
-
                 <datalist id="courseNumbers">
-                  {availableCourses.map((course) => (
-                    <option key={course.dept + course.number} value={course.number}>
+                  {selectedCourseCourses.map((course) => (
+                    <option key={course.dept + course.number} value={course.dept + ' ' + course.number}>
                       {course.title}
                     </option>
                   ))}

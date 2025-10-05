@@ -30,7 +30,8 @@ var details = {
 
 
 
-export async function getDetailsGuess(dept, number){
+export async function getDetailsGuess(courseGuess){
+    const [dept, number] = courseGuess.split(" ")
     var j = await getJSON(dept, number);
     var details = getCourseDetails(j);
 

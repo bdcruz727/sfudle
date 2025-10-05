@@ -16,6 +16,8 @@ function Standard() {
   const [courseGuessed, setCourseGuessed] = useState('')
   const [answer, setAnswer] = useState('');
 
+  const [standardTutorial, setStandardTutorial] = useState(false);
+
   const [submitError, setSubmitError] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
 
@@ -85,6 +87,14 @@ function Standard() {
     );
     setError(""); // Clear error when toggling
   };
+
+
+  const handleHowToPlay = () =>
+  {
+    if (standardTutorial) {setStandardTutorial(false)}
+    else{setStandardTutorial(true)}
+
+  }
 
   const handleSelectAll = () => {
     if (selectedDepts.length === departments.length){
@@ -287,14 +297,15 @@ function Standard() {
                 <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
                 Guess
                 </div>
-                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
-                Faculty
-                </div>
+                
                 <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
                 Department
                 </div>
                 <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
                 Number
+                </div>
+                <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
+                Faculty
                 </div>
                 <div className="w-32 h-8 border rounded flex items-center justify-center text-center">
                 Designation
@@ -314,10 +325,6 @@ function Standard() {
                             {details.dept + " " + details.number}
                         </div>
                         <div className="w-32 h-32 border rounded flex items-center justify-center text-center"
-                        style={{ backgroundColor: colourList[index].facultyColour}}>
-                            {details.faculty}
-                        </div>
-                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center"
                         style={{ backgroundColor: colourList[index].deptColour}}>
                             {details.dept}
                         </div>
@@ -334,6 +341,10 @@ function Standard() {
                                 {digit}
                           </div>
                             ))}
+                        </div>
+                        <div className="w-32 h-32 border rounded flex items-center justify-center text-center"
+                        style={{ backgroundColor: colourList[index].facultyColour}}>
+                            {details.faculty}
                         </div>
                         
                         <div className="w-32 h-32 border rounded flex flex-col items-center justify-center text-center"
@@ -379,7 +390,32 @@ function Standard() {
 
   // ===== ORIGINAL START PAGE =====
   return (
+    
     <div className="flex flex-col items-center justify-start min-h-screen bg-white text-black">
+      {standardTutorial && (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 w-[80%] max-w-3xl relative">
+          <h3 className="text-3xl font-bold mb-4">Standard Mode Tutorial</h3>
+          <p className="mb-4">
+            Welcome to Standard Mode! Here's how the game works:
+          </p>
+          <ul className="list-disc pl-5 mb-4 text-black">
+            <li>Select one or more departments for a random course to be generated, and start!</li>
+            <li>Type a course (e.g., CMPT 120) and submit your guess.</li>
+            <li>The colors will indicate how close your guess is.</li>
+            <li>Green = Perfect, Yellow = One Off, Red = Wrong</li>
+            <li>Keep guessing until you get everything correct!</li>
+          </ul>
+      
+          <button
+            className="close-button absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            onClick={() => setStandardTutorial(false)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+)}
       {/* ===== HEADER ===== */}
       <Link to="/">
       <div className='flex flex-row items-end w-100 mt-16'>
@@ -395,7 +431,7 @@ function Standard() {
 
       {/* ===== FILTERS ===== */}
       <div className="flex flex-col items-center py-4 w-full">
-        <h3 className="text-2xl font-semibold mb-10 text-black">Select Department(s)<br></br>To Guess From</h3>
+        <h3 className="text-2xl font-semibold mb-4 text-black">Select Department(s)<br></br>To Guess From</h3>
 
         <div className="flex flex-wrap justify-center gap-4 w-[600px]">
           {departments.map((dept) => (
@@ -421,6 +457,10 @@ function Standard() {
             style={{ backgroundColor: "#CC0633" }}
           >
             Start
+        </button>
+
+        <button className="select-button mt-4" onClick={() => handleHowToPlay()}>
+            How to Play
         </button>
 
         {/* ===== ON-PAGE ERROR MESSAGE ===== */}

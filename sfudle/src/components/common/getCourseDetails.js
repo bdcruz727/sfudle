@@ -78,9 +78,14 @@ export function getCourseDetails(json){
         number: String(getCourseNumber(json)),
         designations: getCourseDesignation(json),
         units: getCourseUnits(json),
-        title: getCourseTitle(json)
+        title: getCourseTitle(json),
+        description: getCourseDescription(json)
     }
     return details;
+}
+
+export function getCourseDescription(json){
+    return json[0].description
 }
 
 export function getCourseTitle(json){

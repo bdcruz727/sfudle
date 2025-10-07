@@ -30,6 +30,8 @@ var details = {
 
 
 
+
+
 export async function getDetailsGuess(courseGuess){
     const [dept, number] = courseGuess.split(" ")
     var j = await getJSON(dept, number);
@@ -219,11 +221,51 @@ function getUnitsColour(ansDetails, guessDetails){
     
 }
 
+function getNumberColours(ansDetails, guessDetails){
+    var ansNums = [ansDetails.number[0], ansDetails.number[1], ansDetails.number[2]];
+    var guessNums = [guessDetails.number[0], guessDetails.number[1], guessDetails.number[2]];
+    var colours = [".", ".", "."];
+
+
+    for(let i = 0; i < 3; i++){
+        if(ansNums[i] == guessNums[i]){
+            ansNums[i] = ".";
+            colours[i] = "g";
+        }
+    }
+
+    for (let i = 0; i < guessNums.length; i++) {
+        if(colours[i] == "g"){
+            continue;
+        }
+
+        const pos = findFirstMatch(guessNums[i], ansNums);
+        if(pos == -1){
+            colours[i] = "b";
+        }
+        else{
+            ansNums[pos] = ".";
+            colours[i] = "y";
+        }
+    }
+    return colours;
+}
+
+function findFirstMatch(character, numbers){
+    for (let i = 0; i < numbers.length; i++) {
+        if(numbers[i] == character){
+            return i;
+        }
+    }
+    return -1;
+}
+
 function getNumber1Colour(ansDetails, guessDetails){
-    if( ansDetails.number[0] == guessDetails.number[0] ){
+    const cols = getNumberColours(ansDetails, guessDetails);
+    if( cols[0] == "g" ){
         return '#B1DFA3'; 
     }
-    else if( Math.abs(ansDetails.number[0] - guessDetails.number[0] ) <= 1 ){
+    else if( cols[0] == "y" ){
         return '#FFE681';
     }
     else{
@@ -232,10 +274,11 @@ function getNumber1Colour(ansDetails, guessDetails){
 }
 
 function getNumber2Colour(ansDetails, guessDetails){
-    if( ansDetails.number[1] == guessDetails.number[1] ){
+    const cols = getNumberColours(ansDetails, guessDetails);
+    if(  cols[1] == "g"  ){
         return '#B1DFA3'; 
     }
-    else if( Math.abs(ansDetails.number[1] - guessDetails.number[1] ) <= 1 ){
+    else if(  cols[1] == "y" ){
         return '#FFE681';
     }
     else{
@@ -244,10 +287,11 @@ function getNumber2Colour(ansDetails, guessDetails){
 }
 
 function getNumber3Colour(ansDetails, guessDetails){
-    if( ansDetails.number[2] == guessDetails.number[2] ){
+    const cols = getNumberColours(ansDetails, guessDetails);
+    if(  cols[2] == "g"  ){
         return '#B1DFA3'; 
     }
-    else if( Math.abs(ansDetails.number[2] - guessDetails.number[2] ) <= 1 ){
+    else if(  cols[2] == "y"  ){
         return '#FFE681';
     }
     else{
